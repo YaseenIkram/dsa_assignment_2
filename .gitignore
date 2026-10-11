@@ -1,0 +1,11 @@
+# Ignore compiled executables
+*.exe
+*.out
+*.o
+app
+main
+
+# Ignore build directories and IDE cache
+.vscode/
+build/
+bin/
