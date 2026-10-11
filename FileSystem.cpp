@@ -25,15 +25,9 @@ void Item::print(){
     cout<<id <<": " <<name;
 }
 
-Folder::Folder(string name, Folder* parent) : Item(name, parent) {
-    if (parent != nullptr) {
-        parent->addChild(this);
-    }
-}
+Folder::Folder(string name, Folder* parent) : Item(name, parent) {}
 
-File::File(string name, Folder* parent, int p):  Item(name, parent), pages(p) {
-    parent->addChild(this);
-}
+File::File(string name, Folder* parent, int p):  Item(name, parent), pages(p) {}
 
 
 void Folder::print(){
@@ -51,4 +45,28 @@ void Folder::printChildren(){
     for(Item* child: children){
         child->print();
     }
+}
+
+
+Folder* search(string name, Folder* root){
+    if(root == nullptr){
+        return nullptr;
+    }
+
+    if(root->name == name){
+        return root;
+    }
+
+    for(Item* child: root->children){
+        if(child->isFolder()){
+            Folder* folder = static_cast<Folder*>(child);
+
+            Folder* result = search(name, folder);
+
+            if(result != nullptr){
+                return result;
+            }
+        }
+    }
+    return nullptr;
 }

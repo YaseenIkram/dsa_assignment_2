@@ -1,4 +1,5 @@
 #include "FileSystem.h"
+#include<iostream>
 using namespace std;
 
 Folder* buildDefaultFileSystem(){
@@ -15,21 +16,41 @@ Folder* buildDefaultFileSystem(){
     File* BST = new File("BST.pdf", Trees, 6); //10
     File* Search = new File("Search.pdf", CS, 4);  //11
 
+    Campus->addChild(CS);
+    Campus->addChild(Admin);
+    Campus->addChild(Empty);
+    
+    CS->addChild(DSA);
+    CS->addChild(AI);
+    CS->addChild(Search);
+
+    Admin->addChild(Notices);
+
+    DSA->addChild(Stacks);
+    DSA->addChild(Trees);
+    DSA->addChild(Queues);
+
+    Trees->addChild(BST);
+
 
     return Campus;
 }
 
 
-void printHierarchy(Item* item){
+void printHierarchy(Item* item, int depth = 0){
     if(item == nullptr)
     return;
 
+    cout<<"|";
+    for(int i=0; i<depth*3; i++){
+        cout<<"-";
+    }
     item->print();
 
     if(item->isFolder()){
         Folder* folder = static_cast<Folder*>(item);
         for(Item* child: folder->children){
-            printHierarchy(child);  
+            printHierarchy(child, depth + 1);  
         }
     }
 }
@@ -39,3 +60,5 @@ void simulate(){
     Folder* Campus = buildDefaultFileSystem();
     printHierarchy(Campus);
 }
+
+Folder* search(string name, Folder* root);
