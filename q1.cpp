@@ -1,80 +1,67 @@
 #include<iostream>
-#include "HierarchySetup.h"
+#include<string>
 #include<vector>
+#include "FileSystem.h"
+#include "HierarchySetup.h"
 #include "Stack.h"
 using namespace std;
 
-vector <string> parsePath(string path);
-bool validDirs(vector<string>dirs, vector<string>defaultDirs);
-
 int main(){
     Folder* Campus = buildDefaultFileSystem();
-    vector<string> defaultDirs = {"Campus", "CS", "Admin", "DSA", "AI", "Empty", "Trees"};
-    string path;
+    Folder* currentFolder = Campus;
 
+    Stack backStack(10);
+    Stack forwardStack(10);
 
-    cout<<"Enter path: ";
-    cin >> path;
-
-    vector<string>parsed = parsePath(path);
-    
-    cout<<"Parsed: " <<endl;
-    for(string dir: parsed){
-        cout<<dir <<", ";
-    }
-    cout<<endl;
-
-    if(validDirs(parsed, defaultDirs)){
-        cout<<"valid dirs" <<endl;
-    }
-    else{
-        cout<<"Invalid dirs" <<endl;
-    }
-}
-
-
-vector <string> parsePath(string path){
-    int i=0;
-    vector<string> dirs;
-    string curr = "";
-    while(path[i] != '\0'){
-        if(path[i] == '/'){
-            if(curr != ""){
-                dirs.push_back(curr);
-                curr = "";
-            }
-            i++;
-            continue;
+    string command;
+    cout<<"Enter command: ";
+    while(cin >> command){
+        if(command == "EXIT" || command == "exit"){
+            break;
         }
-        curr += path[i];
-        i++;
-    }
-
-    if(curr != ""){
-        dirs.push_back(curr);
-    }
-    return dirs;
-}
-
-
-bool validDirs(vector<string>dirs, vector<string>defaultDirs){
-    if(dirs.empty()){
-        return false;
-    }
-
-    for(string dir: dirs){
-        bool found = false;
-        for(string dDir: defaultDirs){
-            if(dir == dDir){
-                found = true;
-                break;
-            }
-           
+        else if(command == "WHERE"){
+            cout << getFullPath(currentFolder) << endl;
         }
-        if(!found){
-           return false;
+        else if(command == "OPEN"){
+            string path;
+            cin >> path;
+            Folder* dest = resolvePath(path, currentFolder, Campus);
+            if(dest == nullptr){
+                cout << "Invalid path: " << path << endl;
             }
-        
+            else{
+                backStack.push(getFullPath(currentFolder));
+                while(!forwardStack.isEmpty()){
+                    forwardStack.pop();
+                }
+                currentFolder = dest;
+                cout << getFullPath(currentFolder) << endl;
+            }
+        }
+        else if(command == "BACK"){
+            if(backStack.isEmpty()){
+                cout << "Cannot go back: history is empty." << endl;
+            }
+            else{
+                forwardStack.push(getFullPath(currentFolder));
+                string prevPath = backStack.top();
+                backStack.pop();
+                currentFolder = resolvePath(prevPath, Campus, Campus);
+                cout << getFullPath(currentFolder) << endl;
+            }
+        }
+        else if(command == "FORWARD"){
+            if(forwardStack.isEmpty()){
+                cout << "Cannot go forward: history is empty." << endl;
+            }
+            else{
+                backStack.push(getFullPath(currentFolder));
+                string nextPath = forwardStack.top();
+                forwardStack.pop();
+                currentFolder = resolvePath(nextPath, Campus, Campus);
+                cout << getFullPath(currentFolder) << endl;
+            }
+        }
     }
-    return true;
+    return 0;
 }

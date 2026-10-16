@@ -29,6 +29,7 @@ Folder::Folder(string name, Folder* parent) : Item(name, parent) {}
 
 File::File(string name, Folder* parent, int p):  Item(name, parent), pages(p) {}
 
+void File::setPages(int p){ pages = p; }
 
 void Folder::print(){
     Item::print();
@@ -40,13 +41,11 @@ void File::print(){
     cout<<"  [" <<pages <<" pages]" <<endl;
 }
 
-
 void Folder::printChildren(){
     for(Item* child: children){
         child->print();
     }
 }
-
 
 Folder* search(string name, Folder* root){
     if(root == nullptr){
@@ -65,6 +64,28 @@ Folder* search(string name, Folder* root){
 
             if(result != nullptr){
                 return result;
+            }
+        }
+    }
+    return nullptr;
+}
+
+File* findFileById(int id, Item* root) {
+    if (root == nullptr) return nullptr;
+
+    if (root->id == id) {
+        if (root->isFile()) {
+            return static_cast<File*>(root);
+        }
+        return nullptr; // id is found but it is a of a folder
+    }
+
+    if (root->isFolder()) {
+        Folder* folder = static_cast<Folder*>(root);
+        for (Item* child : folder->children) {
+            File* res = findFileById(id, child);
+            if (res != nullptr) {
+                return res;
             }
         }
     }
