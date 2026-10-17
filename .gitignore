@@ -2,6 +2,9 @@
 *.exe
 *.out
 *.o
+q1
+q2
+q3
 app
 main
 
