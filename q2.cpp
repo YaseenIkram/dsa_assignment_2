@@ -21,7 +21,6 @@ bool cancelJob(Queue& q, int jobID) {
         }
     }
 
-    // Move jobs back into the main queue
     while (!tempQueue.isEmpty()) {
         q.enqueue(tempQueue.front());
         tempQueue.dequeue();
@@ -56,7 +55,6 @@ void runTurns(Queue& q, int turns, int& clock) {
         }
     }
 }
-
 int main() {
     Folder* Campus = buildDefaultFileSystem();
     Queue printQueue;
@@ -65,18 +63,26 @@ int main() {
     int nextJobID = 101;
 
     string command;
-    while (cin >> command) {
+    while (true) {
+        cout << "\nEnter command (PRINT_FILE, RUN, CANCEL, SHOW_QUEUE, EXIT): ";
+        if (!(cin >> command)) {
+            break;
+        }
+
         if (command == "EXIT" || command == "exit") {
             break;
         }
         else if (command == "PRINT_FILE" || command == "PRINT") {
             if (command == "PRINT") {
                 string sub;
-                cin >> sub; // Read "FILE"
+                cin >> sub;
             }
 
             int fileID, copies;
-            cin >> fileID >> copies;
+            cout << "Enter file ID: ";
+            cin >> fileID;
+            cout << "Enter number of copies: ";
+            cin >> copies;
 
             if (copies <= 0) {
                 cout << "Invalid copies count: must be positive." << endl;
@@ -100,11 +106,13 @@ int main() {
         }
         else if (command == "RUN") {
             int turns;
+            cout << "Enter number of turns: ";
             cin >> turns;
             runTurns(printQueue, turns, printerClock);
         }
         else if (command == "CANCEL") {
             int jobID;
+            cout << "Enter job ID to cancel: ";
             cin >> jobID;
             if (cancelJob(printQueue, jobID)) {
                 cout << "Cancelled job " << jobID << endl;
@@ -115,7 +123,7 @@ int main() {
         else if (command == "SHOW_QUEUE" || command == "SHOW") {
             if (command == "SHOW") {
                 string sub;
-                cin >> sub; // Read "QUEUE"
+                cin >> sub;
             }
             printQueue.showQueue();
         }
